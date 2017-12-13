@@ -18,6 +18,18 @@ public class Lexer {
         return this.identifier;
     }
 
+    public Token peek() {
+        // store the initial index value
+        int initialIdx = this.idx;
+
+        Token nextToken = this.next();
+
+        // restore the value
+        this.idx = initialIdx;
+
+        return nextToken;
+    }
+
     public Token next() {
         if (idx > input.length()) {
             throw new IllegalArgumentException();

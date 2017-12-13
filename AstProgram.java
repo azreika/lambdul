@@ -6,7 +6,15 @@ public class AstProgram extends AstNode {
     }
 
     public AstExpression evaluate() {
-        return expr.evaluate();
+        AstExpression initialResult = expr.evaluate();
+        AstExpression simplifiedResult = initialResult.evaluate();
+
+        while(!simplifiedResult.equals(initialResult)) {
+            initialResult = simplifiedResult;
+            simplifiedResult = initialResult.evaluate();
+        }
+
+        return simplifiedResult;
     }
 
     public String toString() {

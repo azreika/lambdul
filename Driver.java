@@ -7,12 +7,17 @@ import java.util.Scanner;
 public class Driver {
     public static void main(String[] args) {
         Scanner keyboard = new Scanner(System.in);
+        System.out.print("> ");
         while(keyboard.hasNextLine()) {
             String lineInput = keyboard.nextLine();
+
             Lexer lexer = new Lexer(lineInput);
             AstProgram program = parseProgram(lexer);
             AstExpression result = program.evaluate();
+
             System.out.println(result);
+            System.out.println();
+            System.out.print("> ");
         }
     }
 
@@ -29,11 +34,20 @@ public class Driver {
         Token token = input.next();
 
         if (token == Token.LBRACKET) {
-            // E -> (EE)
+            // E -> (EE) | (E)
 
             // E
             AstExpression left = parseExpression(input);
 
+            if (input.peek() == Token.RBRACKET) {
+                // current case: E -> (E)
+                // read off the right bracket
+                input.next();
+
+                return left;
+            }
+
+            // current case: E -> (EE)
             // E
             AstExpression right = parseExpression(input);
 

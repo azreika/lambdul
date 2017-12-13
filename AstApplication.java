@@ -29,6 +29,14 @@ public class AstApplication extends AstExpression {
         return new AstApplication(subbedLeft, subbedRight);
     }
 
+    public AstExpression getLeft() {
+        return this.leftExpr;
+    }
+
+    public AstExpression getRight() {
+        return this.rightExpr;
+    }
+
     public AstApplication clone() {
         return new AstApplication(leftExpr.clone(), rightExpr.clone());
     }

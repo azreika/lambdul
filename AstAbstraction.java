@@ -8,11 +8,11 @@ public class AstAbstraction extends AstExpression {
     }
 
     public AstExpression evaluate() {
-        return this.clone();
+        return new AstAbstraction(this.variable.clone(), this.body.evaluate());
     }
 
     public String toString() {
-        return "λ" + variable.toString() + "." + body.toString();
+        return "λ" + variable.toString() + ".(" + body.toString() + ")";
     }
 
     // TODO: should this be getArgument instead?
