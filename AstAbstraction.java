@@ -9,5 +9,6 @@ public class AstAbstraction extends AstExpression {
 
     public AstExpression evaluate() {
         // TODO: evaluation
+        return this;
     }
 }
