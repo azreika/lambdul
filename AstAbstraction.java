@@ -8,6 +8,21 @@ public class AstAbstraction extends AstExpression {
     }
 
     public AstExpression evaluate() {
+        // Check if an eta-reduction applies
+        // \x.(f x) <=> f
+        if (this.body instanceof AstApplication) {
+            AstApplication application = (AstApplication) this.body;
+            if (application.getRight() instanceof AstVariable) {
+                AstVariable subvariable = (AstVariable) application.getRight();
+                if (subvariable.getName().equals(this.variable.getName())) {
+                    // eta-application applies!
+                    // Abstraction is of the form \x.(f x), so just evaluate f
+                    return application.getLeft().evaluate();
+                }
+            }
+        }
+
+        // eta-reduction does not apply; evaluate the full body
         return new AstAbstraction(this.variable.clone(), this.body.evaluate());
     }
 
