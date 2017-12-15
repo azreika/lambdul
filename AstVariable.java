@@ -9,7 +9,7 @@ public class AstVariable extends AstExpression {
         return this.name;
     }
 
-    public AstExpression evaluate() {
+    public AstExpression evaluate(Environment env) {
         return this.clone();
     }
 

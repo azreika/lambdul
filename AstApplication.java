@@ -7,9 +7,10 @@ public class AstApplication extends AstExpression {
         this.rightExpr = rightExpr;
     }
 
-    public AstExpression evaluate() {
-        AstExpression evaluatedLeft = leftExpr.evaluate();
-        AstExpression evaluatedRight = rightExpr.evaluate();
+    public AstExpression evaluate(Environment env) {
+        AstExpression evaluatedLeft = leftExpr.evaluate(env);
+        AstExpression evaluatedRight = rightExpr.evaluate(env);
+
         if (evaluatedLeft instanceof AstAbstraction) {
             AstAbstraction leftLambda = (AstAbstraction) evaluatedLeft;
             AstVariable argument = leftLambda.getVariable();

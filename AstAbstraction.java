@@ -7,7 +7,19 @@ public class AstAbstraction extends AstExpression {
         this.body = body;
     }
 
-    public AstExpression evaluate() {
+    public AstExpression evaluate(Environment env) {
+        if (env.isBound(this.variable.getName())) {
+            // Variable already being used - perform an alpha-reduction
+            AstVariable newVariable = env.renameVariable(this.variable.getName());
+            AstExpression newBody = this.body.substitute(this.variable, newVariable);
+            AstExpression reducedExpression = new AstAbstraction(newVariable, newBody);
+
+            // Evaluate the alpha-reduced expression
+            AstExpression result = reducedExpression.evaluate(env);
+
+            return result;
+        }
+
         // Check if an eta-reduction applies
         // \x.(f x) <=> f
         if (this.body instanceof AstApplication) {
@@ -17,13 +29,21 @@ public class AstAbstraction extends AstExpression {
                 if (subvariable.getName().equals(this.variable.getName())) {
                     // eta-application applies!
                     // Abstraction is of the form \x.(f x), so just evaluate f
-                    return application.getLeft().evaluate();
+                    return application.getLeft().evaluate(env);
                 }
             }
         }
 
+        // Bind the variable
+        env.bindVariable(this.variable.getName());
+
         // eta-reduction does not apply; evaluate the full body
-        return new AstAbstraction(this.variable.clone(), this.body.evaluate());
+        AstExpression evaluatedBody = this.body.evaluate(env);
+
+        // Unbind the variable
+        env.freeVariable(this.variable.getName());
+
+        return new AstAbstraction(this.variable.clone(), evaluatedBody);
     }
 
     public String toString() {
@@ -42,7 +62,6 @@ public class AstAbstraction extends AstExpression {
     public AstExpression substitute(AstVariable var, AstExpression expr) {
         if(var.getName().equals(this.variable.getName())) {
             // overlapping bindings - don't go any further
-            // TODO: should this be cloned?
             return this.clone();
         } else {
             return new AstAbstraction(this.variable.clone(), this.body.substitute(var, expr));

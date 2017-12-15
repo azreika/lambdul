@@ -6,12 +6,17 @@ public class AstProgram extends AstNode {
     }
 
     public AstExpression evaluate() {
-        AstExpression initialResult = expr.evaluate();
-        AstExpression simplifiedResult = initialResult.evaluate();
+        Environment env = new Environment();
+        return this.evaluate(env);
+    }
+
+    public AstExpression evaluate(Environment env) {
+        AstExpression initialResult = expr.evaluate(env);
+        AstExpression simplifiedResult = initialResult.evaluate(env);
 
         while(!simplifiedResult.equals(initialResult)) {
             initialResult = simplifiedResult;
-            simplifiedResult = initialResult.evaluate();
+            simplifiedResult = initialResult.evaluate(env);
         }
 
         return simplifiedResult;
