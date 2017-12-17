@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class Driver {
     public static void main(String[] args) {
         // Set up the environment
-        Environment env = new Environment();
+        AstEnvironment env = new AstEnvironment();
 
         // Start off the REPL
         Scanner keyboard = new Scanner(System.in);

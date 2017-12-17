@@ -7,7 +7,7 @@ public class AstApplication extends AstExpression {
         this.rightExpr = rightExpr;
     }
 
-    public AstExpression evaluate(Environment env) {
+    public AstExpression evaluate(AstEnvironment env) {
         AstExpression evaluatedLeft = leftExpr.evaluate(env);
         AstExpression evaluatedRight = rightExpr.evaluate(env);
 
@@ -24,7 +24,7 @@ public class AstApplication extends AstExpression {
         return "(" + leftExpr.toString() + " " + rightExpr.toString() + ")";
     }
 
-    public AstExpression substitute(AstVariable var, AstExpression expr, Environment env) {
+    public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) {
         AstExpression subbedLeft = leftExpr.substitute(var, expr, env);
         AstExpression subbedRight = rightExpr.substitute(var, expr, env);
         return new AstApplication(subbedLeft, subbedRight);

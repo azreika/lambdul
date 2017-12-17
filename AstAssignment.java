@@ -7,7 +7,7 @@ public class AstAssignment extends AstNode {
         this.value = value;
     }
 
-    public AstAssignment evaluate(Environment env) {
+    public AstAssignment evaluate(AstEnvironment env) {
         env.addAssignment(this);
         return this.clone();
     }

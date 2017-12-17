@@ -7,7 +7,7 @@ public class AstAbstraction extends AstExpression {
         this.body = body;
     }
 
-    public AstExpression evaluate(Environment env) {
+    public AstExpression evaluate(AstEnvironment env) {
         if (env.isBound(this.variable.getName())) {
             // Variable already being used - perform an alpha-reduction
             AstVariable newVariable = env.renameVariable(this.variable.getName());
@@ -59,7 +59,7 @@ public class AstAbstraction extends AstExpression {
         return this.body;
     }
 
-    public AstExpression substitute(AstVariable var, AstExpression expr, Environment env) {
+    public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) {
         if(var.getName().equals(this.variable.getName())) {
             // overlapping bindings - don't go any further
             return this.clone();

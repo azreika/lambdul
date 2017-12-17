@@ -3,13 +3,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 
-// TODO: rename to AstEnvironmnet
-public class Environment {
+public class AstEnvironment {
     Set<String> boundVariables;
 
     Map<String, AstExpression> macroToValueMap;
 
-    public Environment() {
+    public AstEnvironment() {
         boundVariables = new HashSet<String>();
         macroToValueMap = new HashMap<String, AstExpression>();
     }

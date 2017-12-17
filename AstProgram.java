@@ -6,11 +6,11 @@ public class AstProgram extends AstNode {
     }
 
     public AstNode evaluate() {
-        Environment env = new Environment();
+        AstEnvironment env = new AstEnvironment();
         return this.evaluate(env);
     }
 
-    public AstNode evaluate(Environment env) {
+    public AstNode evaluate(AstEnvironment env) {
         if (root instanceof AstExpression) {
             AstExpression expr = (AstExpression) root;
             AstExpression initialResult = expr.evaluate(env);

@@ -9,16 +9,16 @@ public class AstMacro extends AstExpression {
         return this.name;
     }
 
-    public AstExpression evaluate(Environment env) {
+    public AstExpression evaluate(AstEnvironment env) {
         // TODO: throw evaluation errors
         return this.getValue(env).clone();
     }
 
-    public AstExpression substitute(AstVariable var, AstExpression expr, Environment env) {
+    public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) {
         return this.getValue(env).substitute(var, expr, env);
     }
 
-    public AstExpression getValue(Environment env) {
+    public AstExpression getValue(AstEnvironment env) {
         return env.getMacroValue(this);
     }
 
