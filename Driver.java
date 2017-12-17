@@ -64,6 +64,7 @@ public class Driver {
         return program;
     }
 
+    // TODO: refactor to allow A -> M case
     /**
      * Parses an input assignment.
      * Grammar Rules:
@@ -99,11 +100,10 @@ public class Driver {
     /**
      * Parses an input expression.
      * Grammar Rules:
-     * E -> (EE) - an application
+     * E -> (E+) - an application (of one or more expressions)
      * E -> \x.E - an abstraction
      * E -> V    - a variable symbol
      * E -> M    - a macro symbol
-     * E -> (E)  - a bracketed expression
      *
      * @param   input   the lexer/scanner for the current program pass
      * @return          an expression node representing the parsed expression
@@ -112,32 +112,24 @@ public class Driver {
         Token token = input.next();
 
         if (token == Token.LBRACKET) {
-            // Two possible cases: E -> (EE) | (E)
+            // Two possible cases: E -> (E+)
 
             // Parse the first expression
-            AstExpression left = parseExpression(input);
+            AstExpression currentExpression = parseExpression(input);
 
             // Check if we have another expression to parse
-            if (input.peek() == Token.RBRACKET) {
-                // Current case: E -> (E)
-                // read off the right bracket
-                input.next();
-
-                return left;
+            while (input.peek() != Token.RBRACKET) {
+                // Expecting another expression
+                // Assuming left-associativity, so EEE... = (EE)E...
+                AstExpression nextExpression = parseExpression(input);
+                currentExpression = new AstApplication(currentExpression, nextExpression);
             }
 
-            // Current case: E -> (EE)
-            // Parse the remaining expression
-            AstExpression right = parseExpression(input);
+            // Read off the right bracket
+            input.next();
 
-            // TODO: change this to possibly read in (E^n) with left-associativity
-            // Parse )
-            token = input.next();
-            if(token != Token.RBRACKET) {
-                throw new ParseException("')'", input.getLastToken());
-            }
-
-            return new AstApplication(left, right);
+            // Return the final expression
+            return currentExpression;
         } else if (token == Token.LAMBDA) {
             // E -> \var.E
 
