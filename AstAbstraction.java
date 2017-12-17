@@ -44,17 +44,27 @@ public class AstAbstraction extends AstExpression {
             return result;
         }
 
-        // Check if an eta-reduction applies
-        // \x.(f x) <=> f
-        // The body must be an application where the RHS is the abstraction's argument
+        /* Check if an eta-reduction applies:
+         *      \x.(f x) <=> f
+         * Note that:
+         *      -> The body must be an application where the RHS is the abstraction's argument
+         *      -> f must be independent of x
+         */
         if (this.body instanceof AstApplication) {
             AstApplication application = (AstApplication) this.body;
             if (application.getRight() instanceof AstVariable) {
                 AstVariable subvariable = (AstVariable) application.getRight();
                 if (subvariable.equals(this.variable)) {
-                    // eta-application applies!
-                    // Abstraction is of the form \x.(f x), so just evaluate f
-                    return application.getLeft().evaluate(env);
+                    // Check if f is independent of x
+                    // f is independent of x <=> if we sub in another variable for x in f, f is unchanged
+                    // TODO: more efficient way of doing this - make visitor patterns
+                    AstVariable newVariable = new AstVariable(subvariable.getName() + "'");
+                    AstExpression substitutedVersion = application.getLeft().substitute(subvariable, newVariable, env);
+                    if (substitutedVersion.equals(application.getLeft())) {
+                        // eta-application applies!
+                        // Abstraction is of the form \x.(f x), so just evaluate f
+                        return application.getLeft().evaluate(env);
+                    }
                 }
             }
         }
