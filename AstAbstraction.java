@@ -7,14 +7,38 @@ public class AstAbstraction extends AstExpression {
         this.body = body;
     }
 
+    /**
+     * Get the argument of the abstraction.
+     *
+     * @return  the argument variable
+     */
+    public AstVariable getVariable() {
+        // TODO: consider changing to getArgument()
+        return this.variable;
+    }
+
+    /**
+     * Get the body expression of the abstraction.
+     *
+     * @return  the expression in the body
+     */
+    public AstExpression getBody() {
+        return this.body;
+    }
+
+    @Override
     public AstExpression evaluate(AstEnvironment env) {
         if (env.isBound(this.variable.getName())) {
             // Variable already being used - perform an alpha-reduction
-            AstVariable newVariable = env.renameVariable(this.variable.getName());
-            AstExpression newBody = this.body.substitute(this.variable, newVariable, env);
-            AstExpression reducedExpression = new AstAbstraction(newVariable, newBody);
 
-            // Evaluate the alpha-reduced expression
+            // Get a new unused variable name to use
+            AstVariable newVariable = env.renameVariable(this.variable.getName());
+
+            // Replace all body variables bound to this occurrence with the new name
+            AstExpression newBody = this.body.substitute(this.variable, newVariable, env);
+
+            // Evaluate the alpha-reduced expression instead
+            AstExpression reducedExpression = new AstAbstraction(newVariable, newBody);
             AstExpression result = reducedExpression.evaluate(env);
 
             return result;
@@ -22,11 +46,12 @@ public class AstAbstraction extends AstExpression {
 
         // Check if an eta-reduction applies
         // \x.(f x) <=> f
+        // The body must be an application where the RHS is the abstraction's argument
         if (this.body instanceof AstApplication) {
             AstApplication application = (AstApplication) this.body;
             if (application.getRight() instanceof AstVariable) {
                 AstVariable subvariable = (AstVariable) application.getRight();
-                if (subvariable.getName().equals(this.variable.getName())) {
+                if (subvariable.equals(this.variable)) {
                     // eta-application applies!
                     // Abstraction is of the form \x.(f x), so just evaluate f
                     return application.getLeft().evaluate(env);
@@ -34,40 +59,36 @@ public class AstAbstraction extends AstExpression {
             }
         }
 
-        // Bind the variable
+        // Bind the variable before evaluating
         env.bindVariable(this.variable.getName());
 
-        // eta-reduction does not apply; evaluate the full body
+        // Evaluate the body
         AstExpression evaluatedBody = this.body.evaluate(env);
 
-        // Unbind the variable
+        // Free the variable - no longer being used
         env.freeVariable(this.variable.getName());
 
         return new AstAbstraction(this.variable.clone(), evaluatedBody);
     }
 
-    public String toString() {
-        return "λ" + variable.toString() + ".(" + body.toString() + ")";
-    }
-
-    // TODO: should this be getArgument instead?
-    public AstVariable getVariable() {
-        return this.variable;
-    }
-
-    public AstExpression getBody() {
-        return this.body;
-    }
-
+    @Override
     public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) {
-        if(var.getName().equals(this.variable.getName())) {
-            // overlapping bindings - don't go any further
+        if (var.equals(this)) {
+            // Variable names overlap - don't go any further
             return this.clone();
         } else {
+            // Bindings do not change otherwise, so just substitute in the body
             return new AstAbstraction(this.variable.clone(), this.body.substitute(var, expr, env));
         }
     }
 
+
+    @Override
+    public String toString() {
+        return "λ" + variable.toString() + ".(" + body.toString() + ")";
+    }
+
+    @Override
     public AstAbstraction clone() {
         return new AstAbstraction(this.variable.clone(), this.body.clone());
     }

@@ -5,22 +5,39 @@ public class AstMacro extends AstExpression {
         this.name = name;
     }
 
+    /**
+     * Get the identifier name of the macro.
+     *
+     * @return  the name of the macro
+     */
     public String getName() {
         return this.name;
     }
 
-    public AstExpression evaluate(AstEnvironment env) {
-        // TODO: throw evaluation errors
-        return this.getValue(env).clone();
-    }
-
-    public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) {
-        return this.getValue(env).substitute(var, expr, env);
-    }
-
+    /**
+     * Get the expression associated with the macro.
+     *
+     * @param env   the current program environment
+     */
     public AstExpression getValue(AstEnvironment env) {
         return env.getMacroValue(this);
     }
+
+
+    @Override
+    public AstExpression evaluate(AstEnvironment env) {
+        // TODO: throw evaluation errors if not defined
+        // Get the associated expression from the environment
+        return this.getValue(env).clone();
+    }
+
+    @Override
+    public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) {
+        // TODO: should this ever be reached?
+        // Return the substituted version of the associated expression
+        return this.getValue(env).substitute(var, expr, env);
+    }
+
 
     @Override
     public AstMacro clone() {

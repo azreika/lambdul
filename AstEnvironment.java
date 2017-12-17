@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 public class AstEnvironment {
     Set<String> boundVariables;
-
     Map<String, AstExpression> macroToValueMap;
 
     public AstEnvironment() {
@@ -13,11 +12,23 @@ public class AstEnvironment {
         macroToValueMap = new HashMap<String, AstExpression>();
     }
 
-    // TODO: change these to take variables instead of strings
+    /**
+     * Check if a variable is already bound.
+     *
+     * @param   var the name of the variable to check
+     * @return      true if the variable is bound
+     */
     public boolean isBound(String var) {
+        // TODO: change these to take variables instead of strings
         return this.boundVariables.contains(var);
     }
 
+    /**
+     * Get a new unbound variable based on a given variable.
+     *
+     * @param   var the name of the variable to rename to an unbound version
+     * @return      a new unbound variable based on var's name
+     */
     public AstVariable renameVariable(String var) {
         String nextVar = var;
         while (this.isBound(nextVar)) {
@@ -26,22 +37,43 @@ public class AstEnvironment {
         return new AstVariable(nextVar);
     }
 
+    /**
+     * Bind a variable.
+     *
+     * @param   var the name of the variable to bind
+     */
     public void bindVariable(String var) {
         boundVariables.add(var);
     }
 
-    // TODO: rename to unbindvariable?
+    /**
+     * Unbind a variable.
+     *
+     * @param   var the name of the variable to free
+     */
     public void freeVariable(String var) {
+        // TODO: rename to unbindvariable?
         boundVariables.remove(var);
     }
 
+    /**
+     * Add a new macro assignment to the environment.
+     *
+     * @param   assignment  the assignment to add
+     */
     public void addAssignment(AstAssignment assignment) {
-        // macro -> value, for evaluation
+        // TODO: add in value -> macro substitution?
+        // macro -> value map, used for evaluation
         macroToValueMap.put(assignment.getMacro().getName(), assignment.getValue());
-        // TODO: add in value -> macro
     }
 
+    /**
+     * Get the expression associated with a given macro.
+     *
+     * @param   macro   the macro to check
+     */
     public AstExpression getMacroValue(AstMacro macro) {
+        // TODO: add error checking if not present
         return macroToValueMap.get(macro.getName());
     }
 

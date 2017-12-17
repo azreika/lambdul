@@ -1,5 +1,5 @@
 /**
- * REPL driver for the interpreter
+ * REPL driver for a lambda interpreter.
  */
 
 import java.util.Scanner;
@@ -35,25 +35,27 @@ public class Driver {
     }
 
     /**
-     * Parses an input program.
+     * Parses a program.
      * Grammar Rules:
      * P -> E, where E is an expression.
-     * P -> A, where M is a macro assignment.
+     * P -> A, where A is an assignment.
+     *
+     * @param   input   the lexer/scanner for the current program pass
+     * @return          a program node representing the parsed program
      */
     public static AstProgram parseProgram(Lexer input) throws ParseException {
-        // P -> E
-
         AstProgram program;
         if (input.peek() == Token.MACRO) {
-            // Parse A
+            // Current case: Parsing an assignment
             AstAssignment assignment = parseAssignment(input);
             program = new AstProgram(assignment);
         } else {
-            // Parse E
+            // Current case: Parsing an expression
             AstExpression expression = parseExpression(input);
             program = new AstProgram(expression);
         }
 
+        // Check that we have reached the end of the input
         Token token = input.next();
         if (token != Token.EOF) {
             throw new ParseException("end of input", input.getLastToken());
@@ -65,7 +67,10 @@ public class Driver {
     /**
      * Parses an input assignment.
      * Grammar Rules:
-     * A -> M := E
+     * A -> M := E, where M is a macro, E is an expression.
+     *
+     * @param   input   the lexer/scanner for the current program pass
+     * @return          an assignment node representing the parsed assignment
      */
     public static AstAssignment parseAssignment(Lexer input) throws ParseException {
         Token token = input.next();
@@ -73,16 +78,16 @@ public class Driver {
         if (token == Token.MACRO) {
             // A -> M := E
 
-            // Parse M
+            // Parse the macro M
             AstMacro macro = new AstMacro(input.getIdentifier());
 
-            // Parse :=
+            // Parse the token ':='
             token = input.next();
             if (token != Token.OP_ASSIGNMENT) {
                 throw new ParseException(":=", input.getLastToken());
             }
 
-            // Parse E
+            // Parse the expression E
             AstExpression rhs = parseExpression(input);
 
             return new AstAssignment(macro, rhs);
@@ -94,29 +99,38 @@ public class Driver {
     /**
      * Parses an input expression.
      * Grammar Rules:
-     * E -> (EE) | \x.E | E | V | M
+     * E -> (EE) - an application
+     * E -> \x.E - an abstraction
+     * E -> V    - a variable symbol
+     * E -> M    - a macro symbol
+     * E -> (E)  - a bracketed expression
+     *
+     * @param   input   the lexer/scanner for the current program pass
+     * @return          an expression node representing the parsed expression
      */
     public static AstExpression parseExpression(Lexer input) throws ParseException {
         Token token = input.next();
 
         if (token == Token.LBRACKET) {
-            // E -> (EE) | (E)
+            // Two possible cases: E -> (EE) | (E)
 
-            // Parse E
+            // Parse the first expression
             AstExpression left = parseExpression(input);
 
+            // Check if we have another expression to parse
             if (input.peek() == Token.RBRACKET) {
-                // current case: E -> (E)
+                // Current case: E -> (E)
                 // read off the right bracket
                 input.next();
 
                 return left;
             }
 
-            // current case: E -> (EE)
-            // Parse E
+            // Current case: E -> (EE)
+            // Parse the remaining expression
             AstExpression right = parseExpression(input);
 
+            // TODO: change this to possibly read in (E^n) with left-associativity
             // Parse )
             token = input.next();
             if(token != Token.RBRACKET) {
@@ -140,7 +154,7 @@ public class Driver {
                 throw new ParseException("'.'", input.getLastToken());
             }
 
-            // Parse E
+            // Parse the expression E
             AstExpression subExpression = parseExpression(input);
 
             return new AstAbstraction(variable, subExpression);

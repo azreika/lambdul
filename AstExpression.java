@@ -1,4 +1,12 @@
 public abstract class AstExpression extends AstNode {
+    /**
+     * Substitutes all free occurrences of a given variable with an expression.
+     *
+     * @param   var     the variable to replace
+     * @param   expr    the expression to replace the variable with
+     * @param   env     the current program environment
+     * @return          an expression with all free occurrences of the variable replaced
+     */
     public abstract AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env);
 
     @Override
@@ -6,33 +14,4 @@ public abstract class AstExpression extends AstNode {
 
     @Override
     public abstract AstExpression clone();
-
-    @Override
-    public boolean equals(Object other) {
-        if (this instanceof AstVariable && other instanceof AstVariable) {
-            return ((AstVariable) this).getName().equals(((AstVariable) other).getName());
-        }
-
-        if (this instanceof AstApplication && other instanceof AstApplication) {
-            AstApplication first = (AstApplication) this;
-            AstApplication second = (AstApplication) other;
-
-            boolean leftEqual = first.getLeft().equals(second.getLeft());
-            boolean rightEqual = first.getRight().equals(second.getRight());
-            return leftEqual && rightEqual;
-        }
-
-        if (this instanceof AstAbstraction && other instanceof AstAbstraction) {
-            // TODO: deeper equality (independent of variable names)
-            AstAbstraction first = (AstAbstraction) this;
-            AstAbstraction second = (AstAbstraction) other;
-
-            boolean varsEqual = first.getVariable().equals(second.getVariable());
-            boolean bodiesEqual = first.getBody().equals(second.getBody());
-
-            return varsEqual && bodiesEqual;
-        }
-
-        return false;
-    }
 }

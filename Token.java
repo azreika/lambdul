@@ -8,10 +8,10 @@ public enum Token {
     // \
     LAMBDA,
 
-    // [a-zA-Z]*
+    // [a-zA-Z]+
     VARIABLE,
 
-    // _[a-zA-Z]*
+    // _[a-zA-Z]+
     MACRO,
 
     // :=

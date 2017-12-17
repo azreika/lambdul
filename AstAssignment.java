@@ -7,8 +7,12 @@ public class AstAssignment extends AstNode {
         this.value = value;
     }
 
+    @Override
     public AstAssignment evaluate(AstEnvironment env) {
+        // Add the assignment to the program environment
         env.addAssignment(this);
+
+        // The evaluated node is unchanged
         return this.clone();
     }
 
