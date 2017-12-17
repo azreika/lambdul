@@ -1,5 +1,8 @@
 public abstract class AstExpression extends AstNode {
-    public abstract AstExpression substitute(AstVariable var, AstExpression expr);
+    public abstract AstExpression substitute(AstVariable var, AstExpression expr, Environment env);
+
+    @Override
+    public abstract AstExpression evaluate(Environment env);
 
     @Override
     public abstract AstExpression clone();

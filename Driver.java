@@ -6,6 +6,10 @@ import java.util.Scanner;
 
 public class Driver {
     public static void main(String[] args) {
+        // Set up the environment
+        Environment env = new Environment();
+
+        // Start off the REPL
         Scanner keyboard = new Scanner(System.in);
         System.out.print("> ");
         while(keyboard.hasNextLine()) {
@@ -16,12 +20,11 @@ public class Driver {
                 AstProgram program = parseProgram(lexer);
 
                 // Evaluate the resultant expression
-                AstExpression result = program.evaluate();
+                AstNode result = program.evaluate(env);
 
                 // Print the reduced lambda expression
                 System.out.println(result);
             } catch (ParseException pe) {
-                // TODO: create a proper exception class
                 System.out.println("Parsing error: " + pe.getMessage());
             } finally {
                 // Wait for the next input
@@ -35,24 +38,63 @@ public class Driver {
      * Parses an input program.
      * Grammar Rules:
      * P -> E, where E is an expression.
+     * P -> A, where M is a macro assignment.
      */
     public static AstProgram parseProgram(Lexer input) throws ParseException {
         // P -> E
 
-        // Parse E
-        AstExpression expression = parseExpression(input);
+        AstProgram program;
+        if (input.peek() == Token.MACRO) {
+            // Parse A
+            AstAssignment assignment = parseAssignment(input);
+            program = new AstProgram(assignment);
+        } else {
+            // Parse E
+            AstExpression expression = parseExpression(input);
+            program = new AstProgram(expression);
+        }
+
         Token token = input.next();
         if (token != Token.EOF) {
             throw new ParseException("end of input", input.getLastToken());
         }
 
-        return new AstProgram(expression);
+        return program;
+    }
+
+    /**
+     * Parses an input assignment.
+     * Grammar Rules:
+     * A -> M := E
+     */
+    public static AstAssignment parseAssignment(Lexer input) throws ParseException {
+        Token token = input.next();
+
+        if (token == Token.MACRO) {
+            // A -> M := E
+
+            // Parse M
+            AstMacro macro = new AstMacro(input.getIdentifier());
+
+            // Parse :=
+            token = input.next();
+            if (token != Token.OP_ASSIGNMENT) {
+                throw new ParseException(":=", input.getLastToken());
+            }
+
+            // Parse E
+            AstExpression rhs = parseExpression(input);
+
+            return new AstAssignment(macro, rhs);
+        } else {
+            throw new ParseException("assignment", input.getLastToken());
+        }
     }
 
     /**
      * Parses an input expression.
      * Grammar Rules:
-     * E -> (EE) | \x.E | E | V
+     * E -> (EE) | \x.E | E | V | M
      */
     public static AstExpression parseExpression(Lexer input) throws ParseException {
         Token token = input.next();
@@ -105,6 +147,9 @@ public class Driver {
         } else if (token == Token.VARIABLE) {
             // E -> V
             return new AstVariable(input.getIdentifier());
+        } else if (token == Token.MACRO) {
+            // E -> M
+            return new AstMacro(input.getIdentifier());
         } else {
             throw new ParseException("expression", input.getLastToken());
         }

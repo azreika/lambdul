@@ -1,12 +1,17 @@
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 
 // TODO: rename to AstEnvironmnet
 public class Environment {
     Set<String> boundVariables;
 
+    Map<String, AstExpression> macroToValueMap;
+
     public Environment() {
         boundVariables = new HashSet<String>();
+        macroToValueMap = new HashMap<String, AstExpression>();
     }
 
     // TODO: change these to take variables instead of strings
@@ -31,10 +36,21 @@ public class Environment {
         boundVariables.remove(var);
     }
 
+    public void addAssignment(AstAssignment assignment) {
+        // macro -> value, for evaluation
+        macroToValueMap.put(assignment.getMacro().getName(), assignment.getValue());
+        // TODO: add in value -> macro
+    }
+
+    public AstExpression getMacroValue(AstMacro macro) {
+        return macroToValueMap.get(macro.getName());
+    }
+
     @Override
     public String toString() {
         String result = "Environment: {\n";
-        result += "Bound variables: " + boundVariables.toString();
+        result += "Bound variables: " + boundVariables.toString() + "\n";
+        result += "Macros: " + macroToValueMap.toString() + "\n";
         result += "}";
         return result;
     }

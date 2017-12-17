@@ -11,6 +11,12 @@ public enum Token {
     // [a-zA-Z]*
     VARIABLE,
 
+    // _[a-zA-Z]*
+    MACRO,
+
+    // :=
+    OP_ASSIGNMENT,
+
     // .
     DOT,
 

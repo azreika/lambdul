@@ -14,9 +14,9 @@ public class AstApplication extends AstExpression {
         if (evaluatedLeft instanceof AstAbstraction) {
             AstAbstraction leftLambda = (AstAbstraction) evaluatedLeft;
             AstVariable argument = leftLambda.getVariable();
-            return leftLambda.getBody().substitute(argument, evaluatedRight);
+            return leftLambda.getBody().substitute(argument, evaluatedRight, env);
         } else {
-            return this.clone();
+            return new AstApplication(evaluatedLeft, evaluatedRight);
         }
     }
 
@@ -24,9 +24,9 @@ public class AstApplication extends AstExpression {
         return "(" + leftExpr.toString() + " " + rightExpr.toString() + ")";
     }
 
-    public AstExpression substitute(AstVariable var, AstExpression expr) {
-        AstExpression subbedLeft = leftExpr.substitute(var, expr);
-        AstExpression subbedRight = rightExpr.substitute(var, expr);
+    public AstExpression substitute(AstVariable var, AstExpression expr, Environment env) {
+        AstExpression subbedLeft = leftExpr.substitute(var, expr, env);
+        AstExpression subbedRight = rightExpr.substitute(var, expr, env);
         return new AstApplication(subbedLeft, subbedRight);
     }
 

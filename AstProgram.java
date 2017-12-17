@@ -1,32 +1,37 @@
 public class AstProgram extends AstNode {
-    private AstExpression expr;
+    private AstNode root;
 
-    public AstProgram(AstExpression expr) {
-        this.expr = expr;
+    public AstProgram(AstNode root) {
+        this.root = root;
     }
 
-    public AstExpression evaluate() {
+    public AstNode evaluate() {
         Environment env = new Environment();
         return this.evaluate(env);
     }
 
-    public AstExpression evaluate(Environment env) {
-        AstExpression initialResult = expr.evaluate(env);
-        AstExpression simplifiedResult = initialResult.evaluate(env);
+    public AstNode evaluate(Environment env) {
+        if (root instanceof AstExpression) {
+            AstExpression expr = (AstExpression) root;
+            AstExpression initialResult = expr.evaluate(env);
+            AstExpression simplifiedResult = initialResult.evaluate(env);
 
-        while(!simplifiedResult.equals(initialResult)) {
-            initialResult = simplifiedResult;
-            simplifiedResult = initialResult.evaluate(env);
+            while(!simplifiedResult.equals(initialResult)) {
+                initialResult = simplifiedResult;
+                simplifiedResult = initialResult.evaluate(env);
+            }
+
+            return simplifiedResult;
+        } else {
+            return root.evaluate(env);
         }
-
-        return simplifiedResult;
     }
 
     public String toString() {
-        return expr.toString();
+        return root.toString();
     }
 
     public AstProgram clone() {
-        return new AstProgram(expr.clone());
+        return new AstProgram(root.clone());
     }
 }

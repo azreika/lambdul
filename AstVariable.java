@@ -17,7 +17,7 @@ public class AstVariable extends AstExpression {
         return this.name;
     }
 
-    public AstExpression substitute(AstVariable var, AstExpression expr) {
+    public AstExpression substitute(AstVariable var, AstExpression expr, Environment env) {
         if(var.getName().equals(name)) {
             return expr.clone();
         } else {

@@ -19,6 +19,8 @@ public class Lexer {
         return this.identifier;
     }
 
+    // TODO: use Token string output
+
     public Token peek() throws ParseException {
         // store the initial index value
         int initialIdx = this.idx;
@@ -48,6 +50,10 @@ public class Lexer {
 
         while (Character.isWhitespace(input.charAt(this.idx))) {
             this.idx++;
+            if (this.idx == input.length()) {
+                this.lastToken = "EOF";
+                return Token.EOF;
+            }
         }
 
         char nextChar = input.charAt(idx);
@@ -67,6 +73,35 @@ public class Lexer {
             this.idx++;
             this.lastToken = ".";
             return Token.DOT;
+        } else if (nextChar == ':') {
+            this.idx++;
+            if (this.idx == input.length()) {
+                throw new ParseException("=", "EOF");
+            }
+            nextChar = this.input.charAt(idx);
+            if (nextChar != '=') {
+                throw new ParseException("=", Character.toString(nextChar));
+            }
+            this.lastToken = ":=";
+            this.idx++;
+            return Token.OP_ASSIGNMENT;
+        } else if (nextChar == '_') {
+            this.identifier = "_";
+            idx++;
+            if (idx == input.length()) {
+                throw new ParseException("identifier", "EOF");
+            }
+            if (!Character.isLetter(input.charAt(idx))) {
+                throw new ParseException("identifier", Character.toString(input.charAt(idx)));
+            }
+
+            while(this.idx < input.length() && Character.isLetter(this.input.charAt(idx))) {
+                nextChar = input.charAt(idx);
+                identifier += nextChar;
+                this.idx++;
+            }
+            this.lastToken = this.identifier;
+            return Token.MACRO;
         } else if (Character.isLetter(nextChar)) {
             this.identifier = "";
             while(this.idx < input.length() && Character.isLetter(this.input.charAt(idx))) {
