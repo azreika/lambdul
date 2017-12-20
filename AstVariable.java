@@ -15,6 +15,11 @@ public class AstVariable extends AstExpression {
     }
 
     @Override
+    public boolean usesFreeVariable(AstEnvironment env, AstVariable var) {
+        return this.equals(var);
+    }
+
+    @Override
     public AstExpression evaluate(AstEnvironment env) {
         // Variables are already at their most evaluated form
         return this.clone();

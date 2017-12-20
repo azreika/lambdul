@@ -9,6 +9,16 @@ public abstract class AstExpression extends AstNode {
      */
     public abstract AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env);
 
+    /**
+     * Checks if the expression uses a given free variable.
+     * The environment is needed for macro-lookup.
+     *
+     * @param   var the free variable to check for
+     * @param   env the current program environment
+     * @return      true if the variable is used as a free variable
+     */
+    public abstract boolean usesFreeVariable(AstEnvironment env, AstVariable var);
+
     @Override
     public abstract AstExpression evaluate(AstEnvironment env);
 

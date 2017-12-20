@@ -23,6 +23,10 @@ public class AstMacro extends AstExpression {
         return env.getMacroValue(this);
     }
 
+    @Override
+    public boolean usesFreeVariable(AstEnvironment env, AstVariable var) {
+        return this.getValue(env).usesFreeVariable(env, var);
+    }
 
     @Override
     public AstExpression evaluate(AstEnvironment env) {
@@ -37,7 +41,6 @@ public class AstMacro extends AstExpression {
         // Return the substituted version of the associated expression
         return this.getValue(env).substitute(var, expr, env);
     }
-
 
     @Override
     public AstMacro clone() {

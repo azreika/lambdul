@@ -26,10 +26,15 @@ public class AstApplication extends AstExpression {
     }
 
     @Override
+    public boolean usesFreeVariable(AstEnvironment env, AstVariable var) {
+        return leftExpr.usesFreeVariable(env, var) || rightExpr.usesFreeVariable(env, var);
+    }
+
+    @Override
     public AstExpression evaluate(AstEnvironment env) {
         // Evaluate both subexpressions first
-        AstExpression evaluatedLeft = leftExpr.evaluate(env);
         AstExpression evaluatedRight = rightExpr.evaluate(env);
+        AstExpression evaluatedLeft = leftExpr.evaluate(env);
 
         if (evaluatedLeft instanceof AstAbstraction) {
             // Have an abstraction on the left, so we need to substitute!
@@ -38,7 +43,7 @@ public class AstApplication extends AstExpression {
 
             // Replace all free occurrences of the argument in the left-hand side's body
             // with the right hand side expression
-            return leftLambda.getBody().substitute(argument, evaluatedRight, env);
+            return leftLambda.getBody().substitute(argument, evaluatedRight, env).evaluate(env);
         } else {
             // No substitution needed, so move on
             return new AstApplication(evaluatedLeft, evaluatedRight);
@@ -48,8 +53,9 @@ public class AstApplication extends AstExpression {
     @Override
     public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) {
         // Substitute on both sides of the application
-        AstExpression subbedLeft = leftExpr.substitute(var, expr, env);
-        AstExpression subbedRight = rightExpr.substitute(var, expr, env);
+        AstExpression subbedLeft = leftExpr.substitute(var, expr, env).evaluate(env);
+        AstExpression subbedRight = rightExpr.substitute(var, expr, env).evaluate(env);
+
         return new AstApplication(subbedLeft, subbedRight);
     }
 
