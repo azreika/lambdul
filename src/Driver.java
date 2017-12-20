@@ -26,6 +26,10 @@ public class Driver {
                 System.out.println(result);
             } catch (ParseException pe) {
                 System.out.println("Parsing error: " + pe.getMessage());
+            } catch (EvaluationException ee) {
+                System.out.println("Evaluation error: " + ee.getMessage());
+            } catch (StackOverflowError soe) {
+                System.out.println("Evaluation error: stack overflow");
             } finally {
                 // Wait for the next input
                 System.out.println();

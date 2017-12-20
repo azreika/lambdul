@@ -27,7 +27,7 @@ public class AstAbstraction extends AstExpression {
     }
 
     @Override
-    public boolean usesFreeVariable(AstEnvironment env, AstVariable var) {
+    public boolean usesFreeVariable(AstEnvironment env, AstVariable var) throws EvaluationException {
         if (this.variable.equals(var)) {
             // Variable is bound in the body, so no longer free
             return false;
@@ -38,7 +38,7 @@ public class AstAbstraction extends AstExpression {
     }
 
     @Override
-    public AstExpression evaluate(AstEnvironment env) {
+    public AstExpression evaluate(AstEnvironment env) throws EvaluationException {
         if (env.isBound(this.variable.getName())) {
             // Variable already being used - perform an alpha-reduction
 
@@ -90,7 +90,7 @@ public class AstAbstraction extends AstExpression {
     }
 
     @Override
-    public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) {
+    public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) throws EvaluationException {
         if (var.equals(this)) {
             // Variable names overlap - don't go any further
             return this.clone();

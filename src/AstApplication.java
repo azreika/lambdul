@@ -26,12 +26,12 @@ public class AstApplication extends AstExpression {
     }
 
     @Override
-    public boolean usesFreeVariable(AstEnvironment env, AstVariable var) {
+    public boolean usesFreeVariable(AstEnvironment env, AstVariable var) throws EvaluationException {
         return leftExpr.usesFreeVariable(env, var) || rightExpr.usesFreeVariable(env, var);
     }
 
     @Override
-    public AstExpression evaluate(AstEnvironment env) {
+    public AstExpression evaluate(AstEnvironment env) throws EvaluationException {
         // Evaluate both subexpressions first
         AstExpression evaluatedRight = rightExpr.evaluate(env);
         AstExpression evaluatedLeft = leftExpr.evaluate(env);
@@ -51,7 +51,7 @@ public class AstApplication extends AstExpression {
     }
 
     @Override
-    public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) {
+    public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) throws EvaluationException {
         // Substitute on both sides of the application
         AstExpression subbedLeft = leftExpr.substitute(var, expr, env).evaluate(env);
         AstExpression subbedRight = rightExpr.substitute(var, expr, env).evaluate(env);

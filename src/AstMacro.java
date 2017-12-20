@@ -19,24 +19,24 @@ public class AstMacro extends AstExpression {
      *
      * @param env   the current program environment
      */
-    public AstExpression getValue(AstEnvironment env) {
+    public AstExpression getValue(AstEnvironment env) throws EvaluationException {
         return env.getMacroValue(this);
     }
 
     @Override
-    public boolean usesFreeVariable(AstEnvironment env, AstVariable var) {
+    public boolean usesFreeVariable(AstEnvironment env, AstVariable var) throws EvaluationException {
         return this.getValue(env).usesFreeVariable(env, var);
     }
 
     @Override
-    public AstExpression evaluate(AstEnvironment env) {
-        // TODO: throw evaluation errors if not defined
+    public AstExpression evaluate(AstEnvironment env) throws EvaluationException {
+        // TODO: possibly just treat as a variable if undefined?
         // Get the associated expression from the environment
         return this.getValue(env).clone();
     }
 
     @Override
-    public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) {
+    public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) throws EvaluationException {
         // TODO: should this ever be reached?
         // Return the substituted version of the associated expression
         return this.getValue(env).substitute(var, expr, env);

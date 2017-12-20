@@ -10,7 +10,7 @@ public class AstProgram extends AstNode {
      *
      * @return  the evaluated program assuming an empty environment
      */
-    public AstNode evaluate() {
+    public AstNode evaluate() throws EvaluationException {
         return this.evaluate(new AstEnvironment());
     }
 
@@ -24,7 +24,7 @@ public class AstProgram extends AstNode {
     }
 
     @Override
-    public AstNode evaluate(AstEnvironment env) {
+    public AstNode evaluate(AstEnvironment env) throws EvaluationException {
         if (root instanceof AstExpression) {
             AstExpression expr = (AstExpression) root;
 

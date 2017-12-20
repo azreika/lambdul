@@ -52,7 +52,6 @@ public class AstEnvironment {
      * @param   var the name of the variable to free
      */
     public void freeVariable(String var) {
-        // TODO: rename to unbindvariable?
         boundVariables.remove(var);
     }
 
@@ -72,8 +71,11 @@ public class AstEnvironment {
      *
      * @param   macro   the macro to check
      */
-    public AstExpression getMacroValue(AstMacro macro) {
-        // TODO: add error checking if not present
+    public AstExpression getMacroValue(AstMacro macro) throws EvaluationException {
+        AstExpression matchedException = macroToValueMap.get(macro.getName());
+        if (matchedException == null) {
+            throw new EvaluationException(EvaluationErrorType.MACRO_LOOKUP_ERROR, macro, "undefined macro value");
+        }
         return macroToValueMap.get(macro.getName());
     }
 

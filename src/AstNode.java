@@ -5,7 +5,7 @@ public abstract class AstNode {
      * @param   env the current program environment
      * @return      the resultant node after evaluation
      */
-    public abstract AstNode evaluate(AstEnvironment env);
+    public abstract AstNode evaluate(AstEnvironment env) throws EvaluationException;
 
     /**
      * Clones the node.
