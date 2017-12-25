@@ -31,6 +31,8 @@ public class AstMacro extends AstExpression {
     @Override
     public AstExpression evaluate(AstEnvironment env) throws EvaluationException {
         // TODO: possibly just treat as a variable if undefined?
+        // TODO: should this be evaluated here or just left for the program evaluation?
+        //  - if evaluated here might have problems with _NOT := _NOT, etc.
         // Get the associated expression from the environment
         return this.getValue(env).clone();
     }

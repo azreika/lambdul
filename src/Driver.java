@@ -10,9 +10,11 @@ public class Driver {
         AstEnvironment env = new AstEnvironment();
 
         // Start off the REPL
+        boolean exit = false;
         Scanner keyboard = new Scanner(System.in);
+
         System.out.print("> ");
-        while(keyboard.hasNextLine()) {
+        while(!exit && keyboard.hasNextLine()) {
             String lineInput = keyboard.nextLine();
             Lexer lexer = new Lexer(lineInput);
             try {
@@ -27,13 +29,20 @@ public class Driver {
             } catch (ParseException pe) {
                 System.out.println("Parsing error: " + pe.getMessage());
             } catch (EvaluationException ee) {
-                System.out.println("Evaluation error: " + ee.getMessage());
+                if (ee.getType() == EvaluationErrorType.EXIT) {
+                    System.out.println("bye!");
+                    exit = true;
+                } else {
+                    System.out.println("Evaluation error: " + ee.getMessage());
+                }
             } catch (StackOverflowError soe) {
                 System.out.println("Evaluation error: stack overflow");
             } finally {
-                // Wait for the next input
-                System.out.println();
-                System.out.print("> ");
+                if (!exit) {
+                    // Wait for the next input
+                    System.out.println();
+                    System.out.print("> ");
+                }
             }
         }
     }
@@ -43,13 +52,18 @@ public class Driver {
      * Grammar Rules:
      * P -> E, where E is an expression.
      * P -> A, where A is an assignment.
+     * P -> C, where C is a command.
      *
      * @param   input   the lexer/scanner for the current program pass
      * @return          a program node representing the parsed program
      */
     public static AstProgram parseProgram(Lexer input) throws ParseException {
         AstProgram program;
-        if (input.peek() == Token.MACRO) {
+        if (input.peek() == Token.AT) {
+            // Current case: Parsing a command
+            AstCommand command = parseCommand(input);
+            program = new AstProgram(command);
+        } else if (input.peek() == Token.MACRO) {
             // Current case: Parsing an assignment
             AstAssignment assignment = parseAssignment(input);
             program = new AstProgram(assignment);
@@ -66,6 +80,58 @@ public class Driver {
         }
 
         return program;
+    }
+
+    /**
+     * Parses an input command.
+     * Grammar Rules:
+     * C -> @CommandName Arg1 Arg2 ... ArgN
+     *
+     * @param   input   the lexer/scanner for the current program pass
+     * @return          a command node representing the parsed command
+     */
+    public static AstCommand parseCommand(Lexer input) throws ParseException {
+        Token token = input.next();
+
+        if (token == Token.AT) {
+            // C -> @CommandName Arg1 ... ArgN
+
+            // Parse the command name
+            // Command names are the same as variable names
+            token = input.next();
+            if (token != Token.VARIABLE) {
+                throw new ParseException("command name", input.getLastToken());
+            }
+
+            // Parse arguments based on the entered command
+            String commandName = input.getIdentifier();
+            if (commandName.equals("evaluate")) {
+                // @evaluate EXPR
+                AstExpression expr = parseExpression(input);
+                return new AstCommandEvaluate(expr);
+            } else if (commandName.equals("exit")) {
+                // @exit
+                return new AstCommandExit();
+            } else if (commandName.equals("assign")) {
+                // @assign MACRO EXPR
+
+                // Parse the macro
+                token = input.next();
+                if (token != Token.MACRO) {
+                    throw new ParseException("macro", input.getLastToken());
+                }
+                AstMacro macro = new AstMacro(input.getIdentifier());
+
+                // Parse the expression
+                AstExpression expr = parseExpression(input);
+
+                return new AstCommandAssign(macro, expr);
+            } else {
+                throw new ParseException("invalid command '" + input.getIdentifier() + "'");
+            }
+        } else {
+            throw new ParseException("command", input.getLastToken());
+        }
     }
 
     // TODO: refactor to allow A -> M case

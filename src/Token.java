@@ -20,6 +20,9 @@ public enum Token {
     // .
     DOT,
 
+    // @
+    AT,
+
     // EOF
     EOF
 }

@@ -109,6 +109,10 @@ public class Lexer {
             this.idx++;
             this.lastToken = ".";
             return Token.DOT;
+        } else if (nextChar == '@') {
+            this.idx++;
+            this.lastToken = "@";
+            return Token.AT;
         } else if (nextChar == ':') {
             // Expected token: ':='
             this.idx++;

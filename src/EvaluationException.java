@@ -2,9 +2,13 @@
 public class EvaluationException extends Exception {
     public final EvaluationErrorType errorType;
 
-    public EvaluationException(String message) {
+    public EvaluationException(EvaluationErrorType type, String message) {
         super(message);
-        this.errorType = EvaluationErrorType.OTHER;
+        this.errorType = type;
+    }
+
+    public EvaluationException(String message) {
+        this(EvaluationErrorType.OTHER, message);
     }
 
     public EvaluationException(AstExpression expression, String message) {
@@ -14,5 +18,9 @@ public class EvaluationException extends Exception {
     public EvaluationException(EvaluationErrorType type, AstExpression expression, String message) {
         super(message + " when evaluating '" + expression + "'");
         this.errorType = type;
+    }
+
+    public EvaluationErrorType getType() {
+        return this.errorType;
     }
 }
