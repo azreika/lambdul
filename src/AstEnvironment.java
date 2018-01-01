@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class AstEnvironment {
-    Set<String> boundVariables;
-    Map<String, AstExpression> macroToValueMap;
+    private Set<String> boundVariables;
+    private Map<String, AstExpression> macroToValueMap;
 
     public AstEnvironment() {
         boundVariables = new HashSet<String>();

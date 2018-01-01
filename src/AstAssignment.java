@@ -1,6 +1,6 @@
 public class AstAssignment extends AstNode {
-    AstMacro macro;
-    AstExpression value;
+    private AstMacro macro;
+    private AstExpression value;
 
     public AstAssignment(AstMacro macro, AstExpression value) {
         this.macro = macro;

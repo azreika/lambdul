@@ -1,5 +1,5 @@
 public class AstMacro extends AstExpression {
-    String name;
+    private String name;
 
     public AstMacro(String name) {
         this.name = name;

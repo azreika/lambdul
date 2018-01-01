@@ -1,6 +1,6 @@
 public class AstCommandAssign extends AstCommand {
-    AstMacro macro;
-    AstExpression value;
+    private AstMacro macro;
+    private AstExpression value;
 
     public AstCommandAssign(AstMacro macro, AstExpression value) {
         super("assign");
@@ -9,7 +9,7 @@ public class AstCommandAssign extends AstCommand {
     }
 
     @Override
-    public AstNode evaluate(AstEnvironment env) throws EvaluationException {
+    public AstAssignment evaluate(AstEnvironment env) throws EvaluationException {
         AstAssignment correspondingAssignment = new AstAssignment(macro, value);
         return correspondingAssignment.evaluate(env);
     }

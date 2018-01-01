@@ -1,6 +1,6 @@
 @SuppressWarnings("serial")
 public class EvaluationException extends Exception {
-    public final EvaluationErrorType errorType;
+    private EvaluationErrorType errorType;
 
     public EvaluationException(EvaluationErrorType type, String message) {
         super(message);

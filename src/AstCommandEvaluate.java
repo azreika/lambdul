@@ -1,5 +1,5 @@
 public class AstCommandEvaluate extends AstCommand {
-    AstExpression expr;
+    private AstExpression expr;
 
     public AstCommandEvaluate(AstExpression expr) {
         super("evaluate");

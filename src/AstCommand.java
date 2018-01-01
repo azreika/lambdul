@@ -1,5 +1,5 @@
 public abstract class AstCommand extends AstNode {
-    String commandName;
+    private String commandName;
 
     public AstCommand(String commandName) {
         this.commandName = commandName;
