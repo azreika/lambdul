@@ -1,6 +1,7 @@
 public class Lexer {
     private int idx;
     private String identifier;
+    private String string;
     private String input;
     private String lastToken;
 
@@ -30,6 +31,16 @@ public class Lexer {
     public String getIdentifier() {
         // TODO: handle null case
         return this.identifier;
+    }
+
+    /**
+     * Get the value of the last found string.
+     *
+     * @return  the last string
+     */
+    public String getString() {
+        // TODO: handle null case
+        return this.string;
     }
 
     // TODO: use Token string output
@@ -119,16 +130,48 @@ public class Lexer {
 
             // Read in the '='
             if (this.idx == input.length()) {
-                throw new ParseException("=", "EOF");
+                throw new ParseException("'='", "EOF");
             }
             nextChar = this.input.charAt(idx);
             if (nextChar != '=') {
-                throw new ParseException("=", Character.toString(nextChar));
+                throw new ParseException("'='", Character.toString(nextChar));
             }
 
             this.lastToken = ":=";
             this.idx++;
             return Token.OP_ASSIGNMENT;
+        } else if (nextChar == '"') {
+            // Expecting a string
+            this.idx++;
+            this.string = "";
+
+            boolean isTerminatedString = false;
+            while (this.idx < input.length()) {
+                if (this.input.charAt(idx) == '"') {
+                    this.idx++;
+                    isTerminatedString = true;
+                    break;
+                }
+
+                nextChar = input.charAt(idx);
+                if (nextChar == '\\') {
+                    // Escaped character
+                    this.idx++;
+                    if (this.idx == input.length()) {
+                        throw new ParseException("character", "EOF");
+                    }
+                    nextChar = input.charAt(idx);
+                }
+                this.string += nextChar;
+                this.idx++;
+            }
+
+            if (!isTerminatedString) {
+                throw new ParseException("'\"'", "EOF");
+            }
+
+            this.lastToken = "\"" + this.string + "\"";
+            return Token.STRING;
         } else if (nextChar == '_') {
             // Expecting a macro - identifiers that begin with _
             this.idx++;

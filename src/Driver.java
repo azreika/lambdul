@@ -42,6 +42,8 @@ public class Driver {
                     // Wait for the next input
                     System.out.println();
                     System.out.print("> ");
+                } else {
+                    keyboard.close();
                 }
             }
         }

@@ -84,6 +84,16 @@ public class Parser {
                 AstExpression expr = this.parseExpression();
 
                 return new AstCommandAssign(macro, expr);
+            } else if (commandName.equals("import")) {
+                // @import STRING
+
+                // Parse the string
+                token = lexer.next();
+                if (token != Token.STRING) {
+                    throw new ParseException("string", lexer.getLastToken());
+                }
+
+                return new AstCommandImport(lexer.getString());
             } else {
                 throw new ParseException("invalid command '" + lexer.getIdentifier() + "'");
             }

@@ -14,6 +14,9 @@ public enum Token {
     // _[a-zA-Z]+
     MACRO,
 
+    // \"(\\.|[^"])*\"
+    STRING,
+
     // :=
     OP_ASSIGNMENT,
 
