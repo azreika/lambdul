@@ -10,6 +10,7 @@ public class Lexer {
         this.input = input;
         this.idx = 0;
         this.identifier = null;
+        this.string = null;
         this.lastToken = null;
     }
 
@@ -47,21 +48,35 @@ public class Lexer {
 
     /**
      * Get the next token without altering the lexer position.
-     * This method is idempotent.
+     * This method is idempotent, and is equivalent to lookAhead(1).
      *
      * @return  the next token
      */
     public Token peek() throws ParseException {
+        return this.lookAhead(1);
+    }
+
+    /**
+     * Get the token a given number of steps ahead without altering the lexer position.
+     * This method is idempotent.
+     *
+     * @param steps the number of tokens to look ahead by
+     * @return      the token at that position
+     */
+    public Token lookAhead(int steps) throws ParseException {
         // Store the initial index value
         int initialIdx = this.idx;
 
-        // Parse the next token
-        Token nextToken = this.next();
+        // Find the token
+        for (int i = 0; i < steps-1; i++) {
+            this.next();
+        }
+        Token result = this.next();
 
         // Restore the position of the lexer
         this.idx = initialIdx;
 
-        return nextToken;
+        return result;
     }
 
     /**

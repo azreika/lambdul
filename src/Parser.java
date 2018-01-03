@@ -22,7 +22,7 @@ public class Parser {
             // Current case: Parsing a command
             AstCommand command = this.parseCommand();
             program = new AstProgram(command);
-        } else if (lexer.peek() == Token.MACRO) {
+        } else if (lexer.peek() == Token.MACRO && lexer.lookAhead(2) == Token.OP_ASSIGNMENT) {
             // Current case: Parsing an assignment
             AstAssignment assignment = this.parseAssignment();
             program = new AstProgram(assignment);

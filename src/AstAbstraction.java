@@ -91,21 +91,23 @@ public class AstAbstraction extends AstExpression {
 
     @Override
     public AstExpression substitute(AstVariable var, AstExpression expr, AstEnvironment env) throws EvaluationException {
-        if (var.equals(this)) {
+        if (var.equals(this.variable)) {
             // Variable names overlap - don't go any further
+            // e.g. (\x.\y.\x.x z) = - \y.\x.x - NOT (\y.\x.z)
             return this.clone();
-        } else if (expr instanceof AstVariable && ((AstVariable) expr).equals(this.variable)) {
-            // Name clash! Need to avoid this.
+        } else if (expr.usesFreeVariable(env, this.variable)) {
+            // Substituting in the body will bind a previously free variable - bad!
+            // Name clash! Rename the newly-bound variable
             // e.g. (\x.(\y.x) y) = \x.(\y'.y) - NOT \x.(\y.y)
-            AstVariable replacementVariable = (AstVariable) expr;
 
             // Get a new variable to replace the head variable
-            env.bindVariable(replacementVariable.getName());
-            AstVariable newVariable = env.renameVariable(replacementVariable.getName());
-            env.freeVariable(replacementVariable.getName());
+            // TODO: clean up how this is done in the environment
+            env.bindVariable(this.variable.getName());
+            AstVariable newVariable = env.renameVariable(this.variable.getName());
+            env.freeVariable(this.variable.getName());
 
             // Rename its occurrences in the body
-            AstExpression renamedBody = this.body.substitute(replacementVariable, newVariable, env);
+            AstExpression renamedBody = this.body.substitute(this.variable, newVariable, env);
 
             // Create the newly substituted abstraction
             AstAbstraction renamedAbstraction = new AstAbstraction(newVariable, renamedBody);
