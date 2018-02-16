@@ -29,6 +29,15 @@ public class Parser {
         } else {
             // Current case: Parsing an expression
             AstExpression expression = this.parseExpression();
+
+            // Check for more expressions
+            while (lexer.peek() != Token.EOF) {
+                // Expecting another expression
+                // Assuming left-associativity
+                AstExpression nextExpression = this.parseExpression();
+                expression = new AstApplication(expression, nextExpression);
+            }
+
             program = new AstProgram(expression);
         }
 
