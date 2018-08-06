@@ -4,11 +4,9 @@ A pure lambda calculus interpreter with built-in macro support.
 The interpreter will attempt to reduce any lambda expression to its normal form via α-, β-, and η-reductions.
 
 ## Setup
-Build the interpreter by running `javac src/*.java` from the base directory.
+Build the interpreter by running `./build` from the base directory.
 
-The interpreter can then be used by running `java Driver` from within the `src` directory.
-
-To run from another directory, use the command `java -classpath <PATH> Driver` where `<PATH>` is the path to the `src` directory.
+The interpreter can then be used by running `./lambdul` from the base directory.
 
 ## Usage
 

@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+javac -classpath ./opt/jline3.jar ./src/*.java
