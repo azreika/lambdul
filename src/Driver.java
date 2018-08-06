@@ -4,6 +4,11 @@
 
 import java.util.Scanner;
 
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.UserInterruptException;
+
 public class Driver {
     public static void main(String[] args) {
         // Set up the environment
@@ -11,11 +16,21 @@ public class Driver {
 
         // Start off the REPL
         boolean exit = false;
-        Scanner keyboard = new Scanner(System.in);
+        String prompt = "> ";
+        LineReader reader = LineReaderBuilder.builder().build();
 
-        System.out.print("> ");
-        while(!exit && keyboard.hasNextLine()) {
-            String lineInput = keyboard.nextLine();
+        // Disable escape characters when reading input
+        reader.setOpt(LineReader.Option.DISABLE_EVENT_EXPANSION);
+
+        while(!exit) {
+            // Read in user input
+            String lineInput = "";
+            try {
+                lineInput = reader.readLine(prompt);
+            } catch (UserInterruptException | EndOfFileException e) {
+                break;
+            }
+
             Parser parser = new Parser(lineInput);
             try {
                 // Parse the program
@@ -39,11 +54,8 @@ public class Driver {
                 System.out.println("Evaluation error: stack overflow");
             } finally {
                 if (!exit) {
-                    // Wait for the next input
+                    // Wait for next input
                     System.out.println();
-                    System.out.print("> ");
-                } else {
-                    keyboard.close();
                 }
             }
         }
