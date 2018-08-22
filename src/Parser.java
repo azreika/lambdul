@@ -147,7 +147,7 @@ public class Parser {
      * Parses an input expression.
      * Grammar Rules:
      * E -> (E+) - an application (of one or more expressions)
-     * E -> \x.E - an abstraction
+     * E -> \x.B - an abstraction
      * E -> V    - a variable symbol
      * E -> M    - a macro symbol
      *
@@ -176,7 +176,7 @@ public class Parser {
             // Return the final expression
             return currentExpression;
         } else if (token == Token.LAMBDA) {
-            // E -> \var.E
+            // E -> \var.B
 
             // Parse the head variable
             token = lexer.next();
@@ -192,7 +192,7 @@ public class Parser {
             }
 
             // Parse the expression E
-            AstExpression subExpression = this.parseExpression();
+            AstExpression subExpression = this.parseBody();
 
             return new AstAbstraction(variable, subExpression);
         } else if (token == Token.VARIABLE) {
@@ -204,5 +204,27 @@ public class Parser {
         } else {
             throw new ParseException("expression", lexer.getLastToken());
         }
+    }
+
+    /**
+     * Parses the body of a lambda abstraction.
+     * Grammar Rules:
+     * B -> E+
+     *
+     * @return  a node representing the body of a lambda abstraction
+     */
+    public AstExpression parseBody() throws ParseException {
+        // Parse the first expression, there must be at least one
+        AstExpression expression = this.parseExpression();
+
+        // Continue parsing expressions until end of scope
+        while (lexer.peek() != Token.EOF && lexer.peek() != Token.RBRACKET) {
+            // Expecting another expression
+            // Assuming left-associativity
+            AstExpression nextExpression = this.parseExpression();
+            expression = new AstApplication(expression, nextExpression);
+        }
+
+        return expression;
     }
 }
