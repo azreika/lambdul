@@ -124,7 +124,7 @@ public class AstAbstraction extends AstExpression {
 
     @Override
     public String toString() {
-        return "λ" + variable.toString() + "." + body.toString() + "";
+        return "λ" + variable.toString() + ".(" + body.toString() + ")";
     }
 
     @Override
