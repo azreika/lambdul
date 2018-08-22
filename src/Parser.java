@@ -10,7 +10,7 @@ public class Parser {
     /**
      * Parses a program.
      * Grammar Rules:
-     * P -> E, where E is an expression.
+     * P -> B, where B is a sequence of expressions.
      * P -> A, where A is an assignment.
      * P -> C, where C is a command.
      * P -> EOF, indicating an empty program.
@@ -31,17 +31,8 @@ public class Parser {
             AstAssignment assignment = this.parseAssignment();
             program = new AstProgram(assignment);
         } else {
-            // Current case: Parsing an expression
-            AstExpression expression = this.parseExpression();
-
-            // Check for more expressions
-            while (lexer.peek() != Token.EOF) {
-                // Expecting another expression
-                // Assuming left-associativity
-                AstExpression nextExpression = this.parseExpression();
-                expression = new AstApplication(expression, nextExpression);
-            }
-
+            // Current case: Parsing a sequence of expressions
+            AstExpression expression = this.parseExpressionSequence();
             program = new AstProgram(expression);
         }
 
@@ -196,7 +187,7 @@ public class Parser {
             }
 
             // Parse the expression E
-            AstExpression subExpression = this.parseBody();
+            AstExpression subExpression = this.parseExpressionSequence();
 
             return new AstAbstraction(variable, subExpression);
         } else if (token == Token.VARIABLE) {
@@ -217,7 +208,7 @@ public class Parser {
      *
      * @return  a node representing the body of a lambda abstraction
      */
-    public AstExpression parseBody() throws ParseException {
+    public AstExpression parseExpressionSequence() throws ParseException {
         // Parse the first expression, there must be at least one
         AstExpression expression = this.parseExpression();
 
