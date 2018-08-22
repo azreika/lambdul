@@ -67,6 +67,11 @@ public abstract class AstNode {
             return ((AstMacro) this).getName().equals(((AstMacro) other).getName());
         }
 
+        // AstEmpty
+        if (this instanceof AstEmpty && other instanceof AstEmpty) {
+            return true;
+        }
+
         return false;
     }
 }

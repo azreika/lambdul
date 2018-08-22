@@ -13,12 +13,16 @@ public class Parser {
      * P -> E, where E is an expression.
      * P -> A, where A is an assignment.
      * P -> C, where C is a command.
+     * P -> EOF, indicating an empty program.
      *
      * @return  a program node representing the parsed program
      */
     public AstProgram parseProgram() throws ParseException {
         AstProgram program;
-        if (lexer.peek() == Token.AT) {
+        if (lexer.peek() == Token.EOF) {
+            // If the program is empty, return an empty AstNode immediately
+            return new AstProgram(new AstEmpty());
+        } else if (lexer.peek() == Token.AT) {
             // Current case: Parsing a command
             AstCommand command = this.parseCommand();
             program = new AstProgram(command);
