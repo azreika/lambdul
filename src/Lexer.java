@@ -48,7 +48,7 @@ public class Lexer {
 
     /**
      * Get the next token without altering the lexer position.
-     * This method is idempotent, and is equivalent to lookAhead(1).
+     * This method is pure, and is equivalent to lookAhead(1).
      *
      * @return  the next token
      */
@@ -58,7 +58,7 @@ public class Lexer {
 
     /**
      * Get the token a given number of steps ahead without altering the lexer position.
-     * This method is idempotent.
+     * This method is pure.
      *
      * @param steps the number of tokens to look ahead by
      * @return      the token at that position
